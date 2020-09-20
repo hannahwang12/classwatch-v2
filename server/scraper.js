@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 
 const parseData = async ($, term, subject, courseNumber) => {
   const courseTitle = $(
-    'body > p:nth-child(4) > table > tbody > tr:nth-child(2) > td:nth-child(4)',
+    'body > main > p:nth-child(3) > table > tbody > tr:nth-child(2) > td:nth-child(4)',
   ).text();
   let firstResult = true;
   const classes = $('table table:first-of-type > tbody > tr')
