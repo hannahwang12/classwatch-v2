@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const _ = require('lodash')
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
@@ -49,41 +50,33 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(bodyParser.json());
 
-const getTerms = () => {
+const getTerms = (date) => {
   let terms = [];
-  const date = new Date();
-  const currYear = date
-    .getFullYear()
-    .toString()
-    .slice(-2);
+  const currYear = date.getFullYear() % 100;
   const currMonth = date.getMonth() + 1;
+  let prev_fall = `1${(currYear - 1).toString()}9`;
+  let winter = `1${currYear.toString()}1`;
+  let spring = `1${currYear.toString()}5`;
+  let fall = `1${currYear.toString()}9`;
+  let next_winter = `1${(currYear + 1).toString()}1`;
+  let next_spring = `1${(currYear + 1).toString()}5`;
   if (currMonth >= 3 && currMonth < 7) {
-    terms = [
-      `1${(parseInt(currYear, 10) - 1).toString()}9`,
-      `1${parseInt(currYear, 10).toString()}1`,
-      `1${parseInt(currYear, 10).toString()}5`,
-      `1${parseInt(currYear, 10).toString()}9`,
-    ];
+    terms = [prev_fall, winter, spring, fall];
   } else if (currMonth >= 7 && currMonth < 11) {
-    terms = [
-      `1${(parseInt(currYear, 10) - 1).toString()}1`,
-      `1${parseInt(currYear, 10).toString()}5`,
-      `1${parseInt(currYear, 10).toString()}9`,
-      `1${(parseInt(currYear, 10) + 1).toString()}1`,
-    ];
+    terms = [winter, spring, fall, next_winter];
   } else {
-    terms = [
-      `1${(parseInt(currYear, 10) - 1).toString()}5`,
-      `1${(parseInt(currYear, 10) - 1).toString()}9`,
-      `1${parseInt(currYear, 10).toString()}1`,
-      `1${parseInt(currYear, 10).toString()}5`,
-    ];
+    terms = [spring, fall, next_winter, next_spring];
   }
   return terms;
 };
 
+console.assert(_.isEqual(getTerms(new Date('2020-02')), ['1195', '1199', '1201', '1205']));
+console.assert(_.isEqual(getTerms(new Date('2020-06')), ['1199', '1201', '1205', '1209']));
+console.assert(_.isEqual(getTerms(new Date('2020-10')), ['1201', '1205', '1209', '1211']));
+console.assert(_.isEqual(getTerms(new Date('2020-12')), ['1205', '1209', '1211', '1215']));
+
 app.get('/terms', (req, res) => {
-  res.send(getTerms());
+  res.send(getTerms(new Date()));
 });
 
 app.get('/search/:term/:subject/:courseNumber', (req, res) => {
