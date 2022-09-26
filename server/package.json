@@ -20,7 +20,7 @@
     "mongoose": "^5.5.14",
     "node-cron": "^2.0.3",
     "nodemailer": "^6.3.0",
-    "nodemailer-mailgun-transport": "^1.4.0",
+    "nodemailer-mailgun-transport": "^2.1.5",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
   },
